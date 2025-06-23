@@ -21,8 +21,15 @@
       }
     };
     console.log("Loaded _genesys config:", window._genesys);
+
+  // Dynamically inject Genesys script to ensure config is already set
+  const g = document.createElement('script');
+  g.src = "https://apps.euw2.pure.cloud/genesys-bootstrap/genesys.min.js";
+  g.async = false; // force blocking load
+  document.head.appendChild(g);
+
   </script>
-  <script src="https://apps.euw2.pure.cloud/genesys-bootstrap/genesys.min.js"></script>
+ <!-- <script src="https://apps.euw2.pure.cloud/genesys-bootstrap/genesys.min.js"></script> -->
 
 <script>
     function initializeMessenger() {
