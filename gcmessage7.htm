@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Genesys Web Messaging Minimal</title>
+</head>
+<body>
+  <h1>Web Messaging Test</h1>
+  <script>
+    window._genesys = {
+      widgets: {
+        main: {
+          preload: ['messenger'],
+          debug: true,
+          pluginsPath: "https://apps.euw2.pure.cloud/genesys-bootstrap/plugins/",
+          environment: "https://apps.euw2.pure.cloud"
+        },
+        messenger: {
+          deploymentId: "f0d3d7b5-91be-4d5a-a717-a530499f009c"
+        }
+      }
+    };
+    console.log("Loaded _genesys config:", window._genesys);
+  </script>
+  <script src="https://apps.euw2.pure.cloud/genesys-bootstrap/genesys.min.js"></script>
+
+<script>
+    function initializeMessenger() {
+      Genesys('subscribe', 'Messenger.ready', function () {
+        Genesys("command", "Database.set", {
+          messaging: {
+            customAttributes: {
+              chatId: "21234567",
+              firstName: "Simon",
+              lastName: "Brown",
+              email: "simon.brown@example.com",
+              topic: "Billing Inquiry"
+            }
+          }
+        });
+
+        Genesys('command', 'Messenger.open', {}, () => {
+          console.log('Messenger opened via script');
+
+          Genesys('command', 'MessagingService.sendMessage', {
+            message: 'This is a test message - Genesys'
+          }, (data) => {
+            console.log('Message sent', data);
+          }, (error) => {
+            console.error('Error sending message', error);
+          });
+
+        }, (error) => {
+          console.error("Couldn't open messenger.", error);
+        });
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", function () {
+      const interval = setInterval(function () {
+        if (window.Genesys && typeof Genesys === 'function' && Genesys("subscribe")) {
+          clearInterval(interval);
+          initializeMessenger();
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>
