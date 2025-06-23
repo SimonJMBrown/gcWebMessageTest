@@ -3,6 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <title>Genesys Web Messaging Minimal</title>
+  <script>
+    function gcSub() {
+  
+        Genesys('subscribe', 'Messenger.ready', function () {
+
+        Genesys('command','Messenger.open', {}, () => {
+          /*fulfilled callback*/
+          console.log('Messenger opened via script load');
+           Genesys('command','MessagingService.sendMessage',
+            { message: 'This is a test message - Genesys' },
+            (data) => {
+              data ? console.log(data) : null;
+              console.log('Message sent');
+            },
+
+            (error) => {
+              error ? console.log(error) : null;
+              console.log('Error sending message');
+            }
+          );
+
+          },
+
+          (error) => {
+          /*rejected callback*/
+          console.log("Couldn't open messenger.", error);
+          }
+        );
+      });
+  }
+  </script>
 </head>
 <body>
   <h1>Web Messaging Test</h1>
@@ -46,6 +77,7 @@
           });
 
           Genesys("command", "Messenger.open");
+          gcSub();
         }
       }, 500);
     });
