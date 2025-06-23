@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Genesys Controlled Message Send</title>
+
+  <!-- Genesys config BEFORE bootstrap -->
+  <script>
+    window._genesys = {
+      widgets: {
+        main: {
+          debug: true,
+          preload: [], // Do NOT preload messenger automatically
+          pluginsPath: "https://apps.euw2.pure.cloud/genesys-bootstrap/plugins/",
+          environment: "https://apps.euw2.pure.cloud"
+        },
+        messenger: {
+          deploymentId: "f0d3d7b5-91be-4d5a-a717-a530499f009c"
+        }
+      }
+    };
+  </script>
+
+  <!-- Genesys bootstrap loader -->
+  <script src="https://apps.euw2.pure.cloud/genesys-bootstrap/genesys-bootstrap.js"></script>
+</head>
+<body>
+  <h1>Controlled Messenger Launch</h1>
+
+  <script>
+    // Wait for Genesys to be available
+    const interval = setInterval(() => {
+      if (window.Genesys && typeof Genesys === "function" && Genesys("subscribe")) {
+        clearInterval(interval);
+
+        // STEP 1: Load the Messenger plugin explicitly
+        Genesys("command", "Bootstrap.loadPlugin", {
+          name: "messenger",
+          options: {},
+        }).then(() => {
+          console.log("Messenger plugin loaded");
+
+          // STEP 2: Wait for Messenger.ready
+          Genesys("subscribe", "Messenger.ready", () => {
+            console.log("Messenger is ready");
+
+            // STEP 3: Set data before opening
+            Genesys("command", "Database.set", {
+              messaging: {
+                customAttributes: {
+                  chatId: "21234567",
+                  firstName: "Simon",
+                  lastName: "Brown",
+                  email: "simon.brown@example.com",
+                  topic: "Billing Inquiry"
+                }
+              }
+            });
+
+            // STEP 4: Open messenger
+            Genesys("command", "Messenger.open", {}, () => {
+              console.log("Messenger opened");
+
+              // STEP 5: Send message
+              Genesys("command", "MessagingService.sendMessage", {
+                message: "This is a test message from controlled flow"
+              }, (data) => {
+                console.log("Message sent:", data);
+              }, (err) => {
+                console.error("Error sending message:", err);
+              });
+            });
+          });
+        }).catch((err) => {
+          console.error("Failed to load messenger plugin:", err);
+        });
+      }
+    }, 300);
+  </script>
+</body>
+</html>
