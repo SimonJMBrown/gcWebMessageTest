@@ -104,6 +104,12 @@ This placement is relying on the namespace ChatApp object existing, with populat
 based on the script order in this <head> object
 */	
 ChatApp.onReady(function() {
+  if (ChatApp?.ChatId) {
+    console.log('ChatApp.onReady with: ', ChatApp.chatId);
+  }
+  else{
+    console.log('ChatApp.onReady but No ChatApp.chatId');
+  }
   Genesys("command", "Database.set", {
     messaging: {
       customAttributes: {
