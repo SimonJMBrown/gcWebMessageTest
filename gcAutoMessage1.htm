@@ -103,15 +103,16 @@ Genesys('subscribe', 'Messenger.ready', function () {
 This placement is relying on the namespace ChatApp object existing, with populated Querystring
 based on the script order in this <head> object
 */	
-Genesys("command", "Database.set", {
-  messaging: {
-    customAttributes: {
- 	 name: "Simon Brown",
-   ChatId: ChatApp.chatId,
-   Attempt: 6
+ChatApp.onReady(function() {
+  Genesys("command", "Database.set", {
+    messaging: {
+      customAttributes: {
+    name: "Simon Brown",
+    ChatId: ChatApp.chatId,
+    Attempt: 7
+      }
     }
-
-  }
+  });
 });	
 
 /* Subscribing again, may not need this but works atm */
