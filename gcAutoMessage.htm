@@ -11,7 +11,38 @@
 window.ChatApp = window.ChatApp || {};
 
 </script>
-  <!-- Script from Deployment first : Ensuure region and DeploymentId correct -->
+
+<script type="text/javascript" charset="utf-8">
+      // Function to parse query string parameters
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        const paramsObj = {};
+        
+        for (const [key, value] of params.entries()) {
+            paramsObj[key] = value;
+        }
+        
+        return paramsObj;
+    }
+</script>
+
+<script type="text/javascript" charset="utf-8">
+    // When page loads
+    window.onload = function() {
+        setTimeout(() => { console.log("This message is delayed by 2 seconds"); }, 2000);
+        const queryParams = getQueryParams();
+        console.log("Initializing chat session with parameters:", queryParams);
+      if (queryParams !== undefined) {
+        if (queryParams.ChatId !== undefined) {
+          ChatApp.chatId = queryParams.ChatId;
+          console.log('Set chatId in Namespace: ', ChatApp.chatId);
+        }
+      }
+    };
+</script> 
+
+
+<!-- Script from Deployment first : Ensure region and DeploymentId correct -->
 <script type="text/javascript" charset="utf-8">
   (function (g, e, n, es, ys) {
     g['_genesysJs'] = e;
@@ -49,13 +80,16 @@ Genesys('subscribe', 'Messenger.ready', function () {
     }
   );
 });
-/* This will preload next (should be first) message with data that appears in Participant data*/	
+/* This will preload next (should be first) message with data that appears in Participant data 
+This placement is relying on the namespace ChatApp object existing, with populated Querystring
+based on the script order in this <head> object
+*/	
 Genesys("command", "Database.set", {
   messaging: {
     customAttributes: {
  	 name: "Simon Brown",
    ChatId: ChatApp.chatId,
-   Attempt: 3
+   Attempt: 5
     }
 
   }
@@ -82,34 +116,7 @@ function sendMessage() {
 	
 </script>
 
-<script type="text/javascript" charset="utf-8">
-    // When page loads
-    window.onload = function() {
-        setTimeout(() => { console.log("This message is delayed by 2 seconds"); }, 2000);
-        const queryParams = getQueryParams();
-        console.log("Initializing chat session with parameters:", queryParams);
-      if (queryParams !== undefined) {
-        if (queryParams.ChatId !== undefined) {
-          ChatApp.chatId = queryParams.ChatId;
-          console.log('Set chatId in Namespace: ', ChatApp.chatId);
-        }
-      }
-    };
-</script> 
-
-<script type="text/javascript" charset="utf-8">
-      // Function to parse query string parameters
-    function getQueryParams() {
-        const params = new URLSearchParams(window.location.search);
-        const paramsObj = {};
-        
-        for (const [key, value] of params.entries()) {
-            paramsObj[key] = value;
-        }
-        
-        return paramsObj;
-    }
-</script>
+<!-- was here -->
 </head>
 
 <body style="text-align: center;">
