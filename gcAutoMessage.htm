@@ -55,7 +55,7 @@ Genesys("command", "Database.set", {
     customAttributes: {
  	 name: "Simon Brown",
    ChatId: ChatApp.chatId,
-   Attempt: 2
+   Attempt: 3
     }
 
   }
@@ -91,6 +91,7 @@ function sendMessage() {
       if (queryParams !== undefined) {
         if (queryParams.ChatId !== undefined) {
           ChatApp.chatId = queryParams.ChatId;
+          console.log('Set chatId in Namespace: ', ChatApp.chatId);
         }
       }
     };
