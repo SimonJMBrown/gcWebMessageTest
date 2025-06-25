@@ -49,7 +49,8 @@ Genesys("command", "Database.set", {
   messaging: {
     customAttributes: {
  	 name: "Simon Brown",
-   orderId: ChatApp.chatId
+   ChatId: ChatApp.chatId,
+   Attempt: 1
     }
 
   }
@@ -81,7 +82,7 @@ function sendMessage() {
     window.onload = function() {
         setTimeout(() => { console.log("This message is delayed by 2 seconds"); }, 2000);
         const queryParams = getQueryParams();
-        console.log("Initializing chat session with parameters:", params);
+        console.log("Initializing chat session with parameters:", queryParams);
       if (queryParams !== undefined) {
         if (queryParams.ChatId !== undefined) {
           ChatApp.chatId = queryParams.ChatId;
