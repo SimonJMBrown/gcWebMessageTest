@@ -4,7 +4,14 @@
 	    <meta charset="UTF-8">
 	    <title>Genesys Cloud WebMessaging Example</title>
 	</head>
-<!-- Script from Deployment first : Ensuure region and DeploymentId correct -->
+
+<script type="text/javascript" charset="utf-8">
+// First script so should run first and set up.
+// namespace global for across script blocks
+window.ChatApp = window.ChatApp || {};
+
+</script>
+  <!-- Script from Deployment first : Ensuure region and DeploymentId correct -->
 <script type="text/javascript" charset="utf-8">
   (function (g, e, n, es, ys) {
     g['_genesysJs'] = e;
@@ -25,8 +32,6 @@
 /* Subscribe to messenger ready event, should fire when above Genesys script completed and ready 
 For this test, on a fulfilled callback I call the send Message to initiate.
 */
-// namespace global for across script blocks
-window.ChatApp = window.ChatApp || {};
 
 Genesys('subscribe', 'Messenger.ready', function () {
   Genesys(
@@ -50,7 +55,7 @@ Genesys("command", "Database.set", {
     customAttributes: {
  	 name: "Simon Brown",
    ChatId: ChatApp.chatId,
-   Attempt: 1
+   Attempt: 2
     }
 
   }
