@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+	<head lang="en">
+	    <meta charset="UTF-8">
+	    <title>Genesys Cloud WebMessaging Example</title>
+	</head>
+
+<script type="text/javascript" charset="utf-8">
+// First script so should run first and set up.
+// namespace global for across script blocks
+   window.ChatApp = window.ChatApp || { 
+      chatId: null,
+      readyCallbacks: [],
+      onReady: function(callback) {
+        if (this.chatId !== null) {
+          callback();
+        } else {
+          this.readyCallbacks.push(callback);
+        }
+      }
+    };
+
+</script>
+
+<script type="text/javascript" charset="utf-8">
+      // Function to parse query string parameters
+    function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        const paramsObj = {};
+        
+        for (const [key, value] of params.entries()) {
+            paramsObj[key] = value;
+        }
+        
+        return paramsObj;
+    }
+</script>
+
+<script type="text/javascript" charset="utf-8">
+    // When page loads as callbacks so param var available when Genesys scripts loaded and ready
+    window.onload = function() {
+        setTimeout(() => { console.log("This message is delayed by 2 seconds"); }, 2000);
+        const queryParams = getQueryParams();
+        console.log("Initializing chat session with parameters:", queryParams);
+
+      if (queryParams?.ChatId) {
+        ChatApp.chatId = queryParams.ChatId;
+        // Trigger all waiting callbacks
+        ChatApp.readyCallbacks.forEach(cb => cb());
+        ChatApp.readyCallbacks = [];
+        console.log('OnLoad Set chatId in Namespace: ', ChatApp.chatId);
+      }
+      /*
+        if (queryParams !== undefined) {
+        if (queryParams.ChatId !== undefined) {
+          ChatApp.chatId = queryParams.ChatId;
+          console.log('Set chatId in Namespace: ', ChatApp.chatId);
+        }
+      } */
+    };
+</script> 
+
+
+<!-- Script from Deployment first : Ensure region and DeploymentId correct -->
+<script type="text/javascript" charset="utf-8">
+  (function (g, e, n, es, ys) {
+    g['_genesysJs'] = e;
+    g[e] = g[e] || function () {
+      (g[e].q = g[e].q || []).push(arguments)
+    };
+    g[e].t = 1 * new Date();
+    g[e].c = es;
+    ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
+  })(window, 'Genesys', 'https://apps.euw2.pure.cloud/genesys-bootstrap/genesys.min.js', {
+    environment: 'prod-euw2',
+    deploymentId: 'f0d3d7b5-91be-4d5a-a717-a530499f009c'
+  });
+
+</script>
+
+<script type="text/javascript" charset="utf-8">	
+/* Subscribe to messenger ready event, should fire when above Genesys script completed and ready 
+For this test, on a fulfilled callback I call the send Message to initiate.
+*/
+
+Genesys('subscribe', 'Messenger.ready', function () {
+  Genesys(
+    'command',
+    'Messenger.open',
+    {},
+    () => {
+     /*fulfilled callback*/
+     console.log('Messenger opened via script load');
+     sendMessage();
+    },
+    (error) => {
+     /*rejected callback*/
+     console.log("Couldn't open messenger.", error);
+    }
+  );
+});
+/* This will preload next (should be first) message with data that appears in Participant data 
+This placement is relying on the namespace ChatApp object existing, with populated Querystring
+based on the script order in this <head> object
+*/	
+Genesys("command", "Database.set", {
+  messaging: {
+    customAttributes: {
+ 	 name: "Simon Brown",
+   ChatId: ChatApp.chatId,
+   Attempt: 6
+    }
+
+  }
+});	
+
+/* Subscribing again, may not need this but works atm */
+function sendMessage() {
+	Genesys('subscribe', 'MessagingService.ready', () => {
+	  Genesys(
+	    'command',
+	    'MessagingService.sendMessage',
+	    { message: 'My Order Change' },
+	    (data) => {
+	      data ? console.log(data) : null;
+	      console.log('Message sent');
+	    },
+	    (error) => {
+	      error ? console.log(error) : null;
+	      console.log('Error sending message');
+	    }
+	  );
+	});
+}	
+	
+</script>
+
+<!-- was here -->
+</head>
+
+<body style="text-align: center;">
+	
+	<h1>Auto Load message conversation Example</h1>
+	
+	<h1>Change Order details with a Genesys Bot</h1>
+	<div id="Manual Trigger""></div>
+	<button type="button" onclick="sendMessage()">Send Message!</button>
+</body>
+</html>
