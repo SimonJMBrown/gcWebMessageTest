@@ -90,12 +90,12 @@ Genesys('subscribe', 'Messenger.ready', function () {
     {},
     () => {
      /*fulfilled callback*/
-     console.log('Messenger opened via script load');
+     console.log('TOP Messenger opened via script load');
      sendMessage();
     },
     (error) => {
      /*rejected callback*/
-     console.log("Couldn't open messenger.", error);
+     console.log("TOP Couldn't open messenger.", error);
     }
   );
 });
@@ -104,7 +104,7 @@ This placement is relying on the namespace ChatApp object existing, with populat
 based on the script order in this <head> object
 */	
 ChatApp.onReady(function() {
-  if (ChatApp?.ChatId) {
+  if (ChatApp?.chatId) {
     console.log('ChatApp.onReady with: ', ChatApp.chatId);
   }
   else{
@@ -115,7 +115,7 @@ ChatApp.onReady(function() {
       customAttributes: {
     name: "Simon Brown",
     ChatId: ChatApp.chatId,
-    Attempt: 7
+    Attempt: 8
       }
     }
   });
@@ -130,11 +130,11 @@ function sendMessage() {
 	    { message: 'My Order Change' },
 	    (data) => {
 	      data ? console.log(data) : null;
-	      console.log('Message sent');
+	      console.log('SendMessage sent');
 	    },
 	    (error) => {
 	      error ? console.log(error) : null;
-	      console.log('Error sending message');
+	      console.log('SendMessage Error');
 	    }
 	  );
 	});
@@ -150,7 +150,7 @@ function sendMessage() {
 	<h1>Auto Load message conversation Example</h1>
 	
 	<h1>Change Order details with a Genesys Bot</h1>
-	<div id="Manual Trigger""></div>
+	<div id="Manual Trigger"></div>
 	<button type="button" onclick="sendMessage()">Send Message!</button>
 </body>
 </html>
