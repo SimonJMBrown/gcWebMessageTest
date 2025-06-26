@@ -127,7 +127,7 @@ function sendMessage() {
 	  Genesys(
 	    'command',
 	    'MessagingService.sendMessage',
-	    { message: 'My Order Change' },
+	    { message: 'Hello' },
 	    (data) => {
 	      data ? console.log(data) : null;
 	      console.log('SendMessage sent');
